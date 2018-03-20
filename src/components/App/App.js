@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import YTSearch from 'youtube-api-search';
 import SearchBar from '../SearchBar/SearchBar';
-import Button from '../Button/Button';
+import VideoList from '../VideoList/VideoList';
+import VideoDetail from '../VideoDetail/VideoDetail';
 const API_KEY = 'AIzaSyBLp4faH4-YGNMIRyPF1APVc34HViMC3Rk';
 
 class App extends Component {
@@ -10,22 +11,30 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      videos: [] 
+      videos: [],
+      selectedVideo: null 
     };
+    this.videoSearch('surfboards');
+  }
 
-    YTSearch({key: API_KEY, term: 'surfboards'}, videos => {
-      this.setState({ videos });
+  videoSearch(term) {
+    YTSearch({key: API_KEY, term: term}, videos => {
+      this.setState({ 
+        videos: videos,
+        selectedVideo: videos[0] 
+      });
     });
   }
   
   render() {
     return (
       <div className="App">
-        <h1>React Time!</h1>
-        <SearchBar />
-        <Button>
-          Submit
-        </Button>
+        <h1>Youtube Clone</h1>
+        <SearchBar onSearchTermChange={term => this.videoSearch(term)}/>
+        <VideoDetail video={this.state.selectedVideo}/>
+        <VideoList 
+          onVideoSelect={selectedVideo => this.setState({selectedVideo}) }
+          videos={this.state.videos} />
       </div>
     );
   }
